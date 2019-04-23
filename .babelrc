@@ -8,4 +8,5 @@
       },
     ],
   ],
+  plugins: ["@babel/plugin-syntax-throw-expressions"],
 }
