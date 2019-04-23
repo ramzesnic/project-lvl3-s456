@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import axios from 'axios';
 import path from 'path';
-import url from 'url';
 
 const saveFile = (pageURL, data, dir) => {
   const dirName = path.normalize(dir);
