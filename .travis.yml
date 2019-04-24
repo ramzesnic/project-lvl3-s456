@@ -14,7 +14,6 @@ before_script:
 
 script:
   - make lint
-  - npm test
   - nyc --reporter=lcov npm test
 
 after_script:
