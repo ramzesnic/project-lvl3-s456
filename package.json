@@ -28,6 +28,18 @@
     "axios": "^0.18.0",
     "commander": "^2.20.0"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/build/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/__tests__/__fixtures__/"
+    ]
+  },
   "devDependencies": {
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
