@@ -26,7 +26,10 @@
   "homepage": "https://github.com/ramzesnic/project-lvl3-s456#readme",
   "dependencies": {
     "axios": "^0.18.0",
-    "commander": "^2.20.0"
+    "cheerio": "^1.0.0-rc.3",
+    "commander": "^2.20.0",
+    "lodash": "^4.17.11",
+    "remove": "^0.1.5"
   },
   "jest": {
     "testEnvironment": "node",
