@@ -68,7 +68,7 @@ export default (urlPage, dir) => {
     .then((response) => {
       const $ = cheerio.load(response.data);
       const { dom: newDom, links } = getDomWithLocalUrls($, formatedUrl.concat('_files'), baseUrl);
-      resLinks = links.map((i, el) => el).get();
+      resLinks = links.get();
 
       return fs.writeFile(htmlPath, newDom.html());
     })
