@@ -7,4 +7,4 @@ publish:
 lint:
 	npx eslint .
 test:
-	npm run test -- --watchAll
+	DEBUG='page-loader' npm run test -- --watchAll

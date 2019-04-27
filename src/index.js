@@ -3,6 +3,9 @@ import axios from 'axios';
 import path from 'path';
 import url from 'url';
 import cheerio from 'cheerio';
+import debug from 'debug';
+
+const log = debug('page-loader');
 
 const tagType = {
   link: 'href',
@@ -15,8 +18,6 @@ const getLocalPath = (pageURL) => {
   const fileName = path.join(host, pathname).replace(/\W/g, '-');
   return fileName;
 };
-
-// const testfunc = text => console.log(text);
 
 const formatLocalFileName = fileName => fileName.replace(/\//g, '-');
 
@@ -51,7 +52,13 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
 const saveResources = (links, dir) => {
   const urls = links.reduce((acc, e) => ({ ...acc, [e.remoteUrl]: e.localUrl }), {});
   const fnPromise = Object.keys(urls).map(link => axios.get(link, { responseType: 'arraybuffer' })
-    .then(response => fs.writeFile(path.join(dir, urls[link]), response.data)));
+    .then(response => {
+      log('File %o loaded;', link);
+      return fs.writeFile(path.join(dir, urls[link]), response.data);
+    })
+    .then(() => {
+      log('File saved to %o;', urls[link]);
+    }));
   return Promise.all(fnPromise);
 };
 
@@ -60,21 +67,30 @@ export default (urlPage, dir) => {
   const dirName = path.normalize(dir);
   const formatedUrl = getLocalPath(pageURL);
   const basePath = path.join(dirName, formatedUrl);
+  const resourcesPath = basePath.concat('_files');
   const baseUrl = `${pageURL.protocol}//${pageURL.host}`;
   const htmlPath = basePath.concat('.html');
   let resLinks;
 
   return axios.get(pageURL.href)
     .then((response) => {
+      log('Page %o loaded;', urlPage);
       const $ = cheerio.load(response.data);
       const { dom: newDom, links } = getDomWithLocalUrls($, formatedUrl.concat('_files'), baseUrl);
       resLinks = links.get();
 
       return fs.writeFile(htmlPath, newDom.html());
     })
-    .then(() => fs.mkdir(basePath.concat('_files')))
-    .then(() => saveResources(resLinks, dirName))
+    .then(() => {
+      log('Saved to %o', htmlPath);
+      return fs.mkdir(resourcesPath);
+    })
+    .then(() => {
+      log('Files path %o created;', resourcesPath);
+      return saveResources(resLinks, dirName);
+    })
     .catch((error) => {
+      log('Error: %j', error);
       throw error;
     });
 };
