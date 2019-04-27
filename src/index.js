@@ -52,7 +52,7 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
 const saveResources = (links, dir) => {
   const urls = links.reduce((acc, e) => ({ ...acc, [e.remoteUrl]: e.localUrl }), {});
   const fnPromise = Object.keys(urls).map(link => axios.get(link, { responseType: 'arraybuffer' })
-    .then(response => {
+    .then((response) => {
       log('File %o loaded;', link);
       return fs.writeFile(path.join(dir, urls[link]), response.data);
     })
