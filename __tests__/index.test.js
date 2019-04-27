@@ -22,6 +22,23 @@ const resources = {
   style: path.join(__dirname, fixtures, 'files/style.css'),
 };
 
+const getLocalData = async () => ({
+  html: await fs.readFile(resourcesPagePath, 'utf-8'),
+  img: await fs.readFile(resources.img, 'utf-8'),
+   script: await fs.readFile(resources.script, 'utf-8'),
+   style: await fs.readFile(resources.style, 'utf-8'),
+});
+
+const nocker = (pathName, localData) => nock(host)
+    .get(pathName)
+    .reply(200, localData.html)
+    .get('/files/img.jpg')
+    .reply(200, localData.img)
+    .get('/files/script.js')
+    .reply(200, localData.script)
+    .get('/files/style.css')
+    .reply(200, localData.style);
+
 test('download page', async () => {
   const pathName = '/download-test';
   const testData = await fs.readFile(originalPagePath, 'utf-8');
@@ -42,25 +59,12 @@ test('download page', async () => {
 
 test('download resources', async () => {
   const pathName = '/download-resouce-test';
-  const localData = {
-    html: await fs.readFile(resourcesPagePath, 'utf-8'),
-    img: await fs.readFile(resources.img, 'utf-8'),
-    script: await fs.readFile(resources.script, 'utf-8'),
-    style: await fs.readFile(resources.style, 'utf-8'),
-  };
+  const localData = await getLocalData();
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), '__download-resouces-test'));
   const resourcesDir = path.join(tempDir, 'hexlet-io-download-resouce-test_files');
   const httpPath = url.resolve(host, pathName);
 
-  nock(host)
-    .get(pathName)
-    .reply(200, localData.html)
-    .get('/files/img.jpg')
-    .reply(200, localData.img)
-    .get('/files/script.js')
-    .reply(200, localData.script)
-    .get('/files/style.css')
-    .reply(200, localData.style);
+  nocker(pathName, localData);
 
   await pageLoader(httpPath, tempDir);
 
@@ -85,23 +89,9 @@ test('download & mofyfi page', async () => {
   const testData = await fs.readFile(modifiedPagePath, 'utf-8');
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), '__download-modifi-test'));
   const httpPath = url.resolve(host, pathName);
+  const localData = await getLocalData();
 
-  const localData = {
-    html: await fs.readFile(resourcesPagePath, 'utf-8'),
-    img: await fs.readFile(resources.img, 'utf-8'),
-    script: await fs.readFile(resources.script, 'utf-8'),
-    style: await fs.readFile(resources.style, 'utf-8'),
-  };
-
-  nock(host)
-    .get(pathName)
-    .reply(200, localData.html)
-    .get('/files/img.jpg')
-    .reply(200, localData.img)
-    .get('/files/script.js')
-    .reply(200, localData.script)
-    .get('/files/style.css')
-    .reply(200, localData.style);
+  nocker(pathName, localData);
 
   await pageLoader(httpPath, tempDir);
 
