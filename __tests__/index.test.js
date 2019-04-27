@@ -25,19 +25,19 @@ const resources = {
 const getLocalData = async () => ({
   html: await fs.readFile(resourcesPagePath, 'utf-8'),
   img: await fs.readFile(resources.img, 'utf-8'),
-   script: await fs.readFile(resources.script, 'utf-8'),
-   style: await fs.readFile(resources.style, 'utf-8'),
+  script: await fs.readFile(resources.script, 'utf-8'),
+  style: await fs.readFile(resources.style, 'utf-8'),
 });
 
 const nocker = (pathName, localData) => nock(host)
-    .get(pathName)
-    .reply(200, localData.html)
-    .get('/files/img.jpg')
-    .reply(200, localData.img)
-    .get('/files/script.js')
-    .reply(200, localData.script)
-    .get('/files/style.css')
-    .reply(200, localData.style);
+  .get(pathName)
+  .reply(200, localData.html)
+  .get('/files/img.jpg')
+  .reply(200, localData.img)
+  .get('/files/script.js')
+  .reply(200, localData.script)
+  .get('/files/style.css')
+  .reply(200, localData.style);
 
 test('download page', async () => {
   const pathName = '/download-test';
