@@ -3,3 +3,5 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/b232762afe1c4016dba2/maintainability)](https://codeclimate.com/github/ramzesnic/project-lvl3-s456/maintainability)
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b232762afe1c4016dba2/test_coverage)](https://codeclimate.com/github/ramzesnic/project-lvl3-s456/test_coverage)
+
+[![asciicast](https://asciinema.org/a/N4N3bCnCQI3eSxZmzwv3zBwOr.svg)](https://asciinema.org/a/N4N3bCnCQI3eSxZmzwv3zBwOr)

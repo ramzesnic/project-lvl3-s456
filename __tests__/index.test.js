@@ -15,6 +15,7 @@ axios.defaults.adapter = httpAdapter;
 const fixtures = '__fixtures__';
 const originalPagePath = path.join(__dirname, fixtures, 'original_index.html');
 const modifiedPagePath = path.join(__dirname, fixtures, 'modified_index.html');
+const resourcesPagePath = path.join(__dirname, fixtures, 'resources_index.html');
 const resources = {
   img: path.join(__dirname, fixtures, 'files/img.jpg'),
   script: path.join(__dirname, fixtures, 'files/script.js'),
@@ -42,7 +43,7 @@ test('download page', async () => {
 test('download resources', async () => {
   const pathName = '/download-resouce-test';
   const localData = {
-    html: await fs.readFile(modifiedPagePath, 'utf-8'),
+    html: await fs.readFile(resourcesPagePath, 'utf-8'),
     img: await fs.readFile(resources.img, 'utf-8'),
     script: await fs.readFile(resources.script, 'utf-8'),
     style: await fs.readFile(resources.style, 'utf-8'),
@@ -77,4 +78,35 @@ test('download resources', async () => {
   expect(data.img).toBe(localData.img);
   expect(data.script).toBe(localData.script);
   expect(data.style).toBe(localData.style);
+});
+
+test('download & mofyfi page', async () => {
+  const pathName = '/download-test';
+  const testData = await fs.readFile(modifiedPagePath, 'utf-8');
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), '__download-modifi-test'));
+  const httpPath = url.resolve(host, pathName);
+
+  const localData = {
+    html: await fs.readFile(resourcesPagePath, 'utf-8'),
+    img: await fs.readFile(resources.img, 'utf-8'),
+    script: await fs.readFile(resources.script, 'utf-8'),
+    style: await fs.readFile(resources.style, 'utf-8'),
+  };
+
+  nock(host)
+    .get(pathName)
+    .reply(200, localData.html)
+    .get('/files/img.jpg')
+    .reply(200, localData.img)
+    .get('/files/script.js')
+    .reply(200, localData.script)
+    .get('/files/style.css')
+    .reply(200, localData.style);
+
+  await pageLoader(httpPath, tempDir);
+
+  const files = await fs.readdir(tempDir);
+  const localPath = path.join(tempDir, files.find(fileName => path.extname(fileName) === '.html'));
+  const data = await fs.readFile(localPath, 'utf-8');
+  expect(data).toBe(testData);
 });
