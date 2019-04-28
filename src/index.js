@@ -15,11 +15,17 @@ const tagType = {
 
 const getLocalPath = (pageURL) => {
   const { host, pathname } = pageURL;
+  if (pathname === '/') {
+    return host.replace(/\W/g, '-');
+  }
   const fileName = path.join(host, pathname).replace(/\W/g, '-');
   return fileName;
 };
 
-const formatLocalFileName = fileName => fileName.replace(/\//g, '-');
+const formatLocalFileName = (fileName) => {
+  const clearFileName = fileName[0] === '/' ? fileName.slice(1) : fileName;
+  return clearFileName.replace(/\//g, '-');
+};
 
 const getDomWithLocalUrls = (dom, dir, baseUrl) => {
   const links = dom(Object.keys(tagType).join(','))
@@ -33,7 +39,8 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
       }
       const { hostname } = url.parse(fileUrl);
 
-      return !hostname;
+      log('fileUrl = %o', fileUrl);
+      return !hostname && fileUrl[1] !== '/';
     })
     .map((i, el) => {
       const node = dom(el);
