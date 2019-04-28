@@ -100,3 +100,25 @@ test('download & mofyfi page', async () => {
   const data = await fs.readFile(localPath, 'utf-8');
   expect(data).toBe(testData);
 });
+
+test('404 test', async () => {
+  const pathName = '/error-404-test';
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), '__download-404-test'));
+  const httpPath = url.resolve(host, pathName);
+  nock(host)
+    .get(pathName)
+    .reply(404);
+
+  await expect(pageLoader(httpPath, tempDir)).rejects.toThrowErrorMatchingSnapshot();
+});
+
+test('directory is not exist', async () => {
+  const pathName = '/dir-not_exist';
+  const tempDir = pathName;
+  const httpPath = url.resolve(host, pathName);
+  nock(host)
+    .get(pathName)
+    .reply(200, 'not exits');
+
+  await expect(pageLoader(httpPath, tempDir)).rejects.toThrowErrorMatchingSnapshot();
+});

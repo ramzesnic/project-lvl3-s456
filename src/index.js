@@ -13,6 +13,18 @@ const tagType = {
   script: 'src',
 };
 
+const getError = (error) => {
+  const err = {};
+  if (error.errno) {
+    err.code = error.errno;
+    err.message = error.message;
+  } else {
+    err.code = error.response.status;
+    err.message = `Error: ${error.response.statusText} url ${error.response.config.url}`;
+  }
+  return err;
+};
+
 const getLocalPath = (pageURL) => {
   const { host, pathname } = pageURL;
   if (pathname === '/') {
@@ -98,6 +110,6 @@ export default (urlPage, dir) => {
     })
     .catch((error) => {
       log('Error: %j', error);
-      throw error;
+      throw getError(error);
     });
 };

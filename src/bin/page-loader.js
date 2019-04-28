@@ -11,6 +11,9 @@ commander
   .action((urlPage) => {
     pageLoader(urlPage, commander.output)
       .then(() => console.log('OK'))
-      .catch(error => console.log(new Error(error)));
+      .catch((error) => {
+        console.error(error.message);
+        process.exit(error.code);
+      });
   })
   .parse(process.argv);

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`404 test 1`] = `"Error: null url https://hexlet.io/error-404-test"`;
+
+exports[`directory is not exist 1`] = `"ENOENT: no such file or directory, open '/dir-not_exist/hexlet-io-dir-not_exist.html'"`;
