@@ -31,8 +31,7 @@ const getLocalPath = (pageURL) => {
   if (pathname === '/') {
     return host.replace(/\W/g, '-');
   }
-  const fileName = path.join(host, pathname).replace(/\W/g, '-');
-  return fileName;
+  return path.join(host, pathname).replace(/\W/g, '-');
 };
 
 const formatLocalFileName = (fileName) => {
@@ -71,18 +70,10 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
 
 const saveResources = (links, dir) => {
   const urls = links.reduce((acc, e) => ({ ...acc, [e.remoteUrl]: e.localUrl }), {});
-  // const fns = Object.keys(urls).map(link => axios.get(link, { responseType: 'arraybuffer' })
-  //   .then((response) => {
-  //     log('File %o loaded;', link);
-  //     return fs.writeFile(path.join(dir, urls[link]), response.data);
-  //   })
-  //   .then(() => {
-  //     log('File saved to %o;', urls[link]);
-  //   }));
-  // return Promise.all(fns);
+
   const tasks = new Listr(Object.keys(urls).map(link => ({
     title: link,
-    task: () => axios.get(link, { responseType: 'arraybuffer' })
+    task: () => axios.get(link, { responseType: 'arraybuffer' }) // (noop, task)
       .then((response) => {
         log('File %o loaded;', link);
         return fs.writeFile(path.join(dir, urls[link]), response.data);
@@ -90,6 +81,11 @@ const saveResources = (links, dir) => {
       .then(() => {
         log('File saved to %o;', urls[link]);
       }),
+    // .catch((error) => {
+    //   task.title = getError(error).message; // eslint-disable-line
+    //   task.skip();
+    //   throw error;
+    // }),
   })));
   return tasks.run();
 };
