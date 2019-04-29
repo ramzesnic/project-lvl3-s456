@@ -21,12 +21,22 @@ const resources = {
   style: path.join(__dirname, fixtures, 'files/style.css'),
 };
 
-const getLocalData = async () => ({
-  html: await fs.readFile(resources.html, 'utf-8'),
-  img: await fs.readFile(resources.img, 'utf-8'),
-  script: await fs.readFile(resources.script, 'utf-8'),
-  style: await fs.readFile(resources.style, 'utf-8'),
-});
+// const getLocalData = async () => ({
+//   html: await fs.readFile(resources.html, 'utf-8'),
+//   img: await fs.readFile(resources.img, 'utf-8'),
+//   script: await fs.readFile(resources.script, 'utf-8'),
+//   style: await fs.readFile(resources.style, 'utf-8'),
+// });
+const getLocalData = async () => {
+  const tags = Object.keys(resources);
+
+  return tags.reduce(async (acc, tag) => {
+    const newAcc = await acc;
+    const data = await fs.readFile(resources[tag], 'utf-8');
+
+    return { ...newAcc, [tag]: data };
+  }, Promise.resolve({}));
+};
 
 const makeNock = (pathName, localData) => nock(host)
   .get(pathName)
@@ -67,11 +77,10 @@ test('download resources', async () => {
 
   await pageLoader(httpPath, tempDir);
 
-  const files = await fs.readdir(resourcesDir);
   const resourcesPath = {
-    img: path.join(resourcesDir, files.find(fileName => path.extname(fileName) === '.jpg')),
-    script: path.join(resourcesDir, files.find(fileName => path.extname(fileName) === '.js')),
-    style: path.join(resourcesDir, files.find(fileName => path.extname(fileName) === '.css')),
+    img: path.join(resourcesDir, 'files-img.jpg'),
+    script: path.join(resourcesDir, 'files-script.js'),
+    style: path.join(resourcesDir, 'files-style.css'),
   };
   const data = {
     img: await fs.readFile(resourcesPath.img, 'utf-8'),
