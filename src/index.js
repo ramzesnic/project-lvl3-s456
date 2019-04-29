@@ -62,7 +62,7 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
       const formatedUrl = formatLocalFileName(node.attr(urlType));
       const localUrl = path.join(dir, formatedUrl);
 
-      dom(el).attr(urlType, localUrl);
+      node.attr(urlType, localUrl);
       return { remoteUrl, localUrl };
     });
   return { dom, links };
