@@ -73,19 +73,18 @@ const saveResources = (links, dir) => {
 
   const tasks = new Listr(Object.keys(urls).map(link => ({
     title: link,
-    task: () => axios.get(link, { responseType: 'arraybuffer' }) // (noop, task)
+    task: (noop, task) => axios.get(link, { responseType: 'arraybuffer' })
       .then((response) => {
         log('File %o loaded;', link);
         return fs.writeFile(path.join(dir, urls[link]), response.data);
       })
       .then(() => {
         log('File saved to %o;', urls[link]);
+      })
+      .catch((error) => {
+        task.title = getError(error).message; // eslint-disable-line
+        task.skip();
       }),
-    // .catch((error) => {
-    //   task.title = getError(error).message; // eslint-disable-line
-    //   task.skip();
-    //   throw error;
-    // }),
   })));
   return tasks.run();
 };
