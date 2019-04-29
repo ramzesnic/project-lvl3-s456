@@ -85,7 +85,7 @@ const saveResources = (links, dir) => {
         task.title = getError(error).message; // eslint-disable-line
         task.skip();
       }),
-  })));
+  })), { concurrent: true });
   return tasks.run();
 };
 

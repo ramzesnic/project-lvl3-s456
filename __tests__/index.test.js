@@ -9,27 +9,26 @@ import pageLoader from '../src';
 
 const host = 'https://hexlet.io';
 
-axios.defaults.host = host;
 axios.defaults.adapter = httpAdapter;
 
 const fixtures = '__fixtures__';
 const originalPagePath = path.join(__dirname, fixtures, 'original_index.html');
 const modifiedPagePath = path.join(__dirname, fixtures, 'modified_index.html');
-const resourcesPagePath = path.join(__dirname, fixtures, 'resources_index.html');
 const resources = {
+  html: path.join(__dirname, fixtures, 'resources_index.html'),
   img: path.join(__dirname, fixtures, 'files/img.jpg'),
   script: path.join(__dirname, fixtures, 'files/script.js'),
   style: path.join(__dirname, fixtures, 'files/style.css'),
 };
 
 const getLocalData = async () => ({
-  html: await fs.readFile(resourcesPagePath, 'utf-8'),
+  html: await fs.readFile(resources.html, 'utf-8'),
   img: await fs.readFile(resources.img, 'utf-8'),
   script: await fs.readFile(resources.script, 'utf-8'),
   style: await fs.readFile(resources.style, 'utf-8'),
 });
 
-const nocker = (pathName, localData) => nock(host)
+const makeNock = (pathName, localData) => nock(host)
   .get(pathName)
   .reply(200, localData.html)
   .get('/files/img.jpg')
@@ -64,7 +63,7 @@ test('download resources', async () => {
   const resourcesDir = path.join(tempDir, 'hexlet-io-download-resouce-test_files');
   const httpPath = url.resolve(host, pathName);
 
-  nocker(pathName, localData);
+  makeNock(pathName, localData);
 
   await pageLoader(httpPath, tempDir);
 
@@ -91,7 +90,7 @@ test('download & mofyfi page', async () => {
   const httpPath = url.resolve(host, pathName);
   const localData = await getLocalData();
 
-  nocker(pathName, localData);
+  makeNock(pathName, localData);
 
   await pageLoader(httpPath, tempDir);
 
