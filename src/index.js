@@ -4,6 +4,7 @@ import path from 'path';
 import url from 'url';
 import cheerio from 'cheerio';
 import debug from 'debug';
+import Listr from 'listr';
 
 const log = debug('page-loader');
 
@@ -70,15 +71,27 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
 
 const saveResources = (links, dir) => {
   const urls = links.reduce((acc, e) => ({ ...acc, [e.remoteUrl]: e.localUrl }), {});
-  const fnPromise = Object.keys(urls).map(link => axios.get(link, { responseType: 'arraybuffer' })
-    .then((response) => {
-      log('File %o loaded;', link);
-      return fs.writeFile(path.join(dir, urls[link]), response.data);
-    })
-    .then(() => {
-      log('File saved to %o;', urls[link]);
-    }));
-  return Promise.all(fnPromise);
+  // const fns = Object.keys(urls).map(link => axios.get(link, { responseType: 'arraybuffer' })
+  //   .then((response) => {
+  //     log('File %o loaded;', link);
+  //     return fs.writeFile(path.join(dir, urls[link]), response.data);
+  //   })
+  //   .then(() => {
+  //     log('File saved to %o;', urls[link]);
+  //   }));
+  // return Promise.all(fns);
+  const tasks = new Listr(Object.keys(urls).map(link => ({
+    title: link,
+    task: () => axios.get(link, { responseType: 'arraybuffer' })
+      .then((response) => {
+        log('File %o loaded;', link);
+        return fs.writeFile(path.join(dir, urls[link]), response.data);
+      })
+      .then(() => {
+        log('File saved to %o;', urls[link]);
+      }),
+  })));
+  return tasks.run();
 };
 
 export default (urlPage, dir) => {
