@@ -1,3 +1,4 @@
+// @flow
 import { promises as fs } from 'fs';
 import os from 'os';
 import axios from 'axios';

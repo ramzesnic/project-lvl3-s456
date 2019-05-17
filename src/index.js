@@ -1,3 +1,4 @@
+// @flow
 import { promises as fs } from 'fs';
 import axios from 'axios';
 import path from 'path';
@@ -52,7 +53,8 @@ const getDomWithLocalUrls = (dom, dir, baseUrl) => {
       const { hostname } = url.parse(fileUrl);
 
       log('fileUrl = %o', fileUrl);
-      return !hostname && fileUrl[1] !== '/';
+      const isLocalUrl = !hostname && fileUrl[1] !== '/';
+      return isLocalUrl;
     })
     .map((i, el) => {
       const node = dom(el);

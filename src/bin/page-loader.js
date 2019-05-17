@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @flow
 import commander from 'commander';
 import pageLoader from '..';
 

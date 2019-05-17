@@ -3,3 +3,5 @@ dist/
 coverage/
 *.log
 babelrc.*
+.je-project-settings
+project-lvl3-s456.sublime-project
